@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum TacticStyle {
+  POSSESSION // Posse de bola
+  COUNTER_ATTACK // Contra-ataque
+  DEFENSIVE // Defensivo
+  HIGH_PRESSURE // Pressão alta
+  LONG_BALL // Jogo direto
+  BALANCED // Equilibrado
+}
+
+enum Formation {
+  FOUR_THREE_THREE // 4-3-3
+  FOUR_TWO_THREE_ONE // 4-2-3-1
+  FOUR_FOUR_TWO // 4-4-2
+  THREE_FIVE_TWO // 3-5-2
+  FIVE_THREE_TWO // 5-3-2
+  FOUR_ONE_TWO_ONE_TWO // 4-1-2-1-2 (losango)
+}
+
+
+
+model Coach {
+  id          Int      @id @default(autoincrement())
+  name        String
+  titles      Int      @default(0)
+  experiencie Int      @default(0)
+  reputation  Int      @default(0)
+  nationality String?
+  tactics     TacticStyle?
+  preferenceFormation Formation?
+
+  // teams       Team[] 
+
+  // CoachHistory CoachHistory[]
+}
+
+// model Team {
+//   id           Int      @id @default(autoincrement())
+//   name         String   @unique // Nome do time
+//   shortName    String?  // Nome curto ou sigla (ex: "FCB" para Barcelona)
+//   foundedYear  Int?     // Ano de fundação do time
+//   stadium      String?  // Nome do estádio
+//   budget       Int      @default(0) // Orçamento disponível para contratações e despesas
+//   league       String?  // Nome da liga em que o time joga
+//   country      String?  // País do time
+//   points       Int      @default(0) // Pontos no campeonato
+//   wins         Int      @default(0) // Número de vitórias
+//   draws        Int      @default(0) // Número de empates
+//   losses       Int      @default(0) // Número de derrotas
+//   goalsFor     Int      @default(0) // Gols marcados
+//   goalsAgainst Int      @default(0) // Gols sofridos
+//   goalDifference Int    @default(0) // Saldo de gols (gols marcados - gols sofridos)
+
+//   coachId      Int?     
+//   coach        Coach?   @relation(fields: [coachId], references: [id]) // Técnico atual
+
+//   createdAt    DateTime @default(now()) // Registro de quando o time foi criado
+
+//   history      CoachHistory[] // Histórico de treinadores do time
+//   titles       TeamTitle[]
+// }
+
+// model TeamTitle {
+//   id      Int    @id @default(autoincrement())
+//   teamId  Int    
+//   name    String // Nome do título (ex: "Liga Nacional", "Copa do Brasil")
+//   count   Int    @default(1) // Quantidade de vezes que esse título foi vencido
+
+//   team    Team   @relation(fields: [teamId], references: [id])
+// }
+
+// model CoachHistory {
+//   id         Int      @id @default(autoincrement())
+//   coachId    Int
+//   teamId     Int
+//   startDate  DateTime // Quando o treinador assumiu o time
+//   endDate    DateTime? // Quando o treinador saiu do time (null se ainda for o técnico)
+
+//   coach      Coach    @relation(fields: [coachId], references: [id])
+//   team       Team     @relation(fields: [teamId], references: [id])
+// }
+
+// model Competition {
+//   id            Int      @id @default(autoincrement())
+//   name          String   @unique  // Nome do campeonato (ex: "Liga Nacional", "Copa Continental")
+//   type          String   // Tipo de campeonato: "league", "group_stage", "knockout"
+//   season        Int      // Ano ou temporada do campeonato
+//   country       String?  // País da competição (opcional, para ligas nacionais)
+//   currentStage  String   // Fase atual (ex: "Group Stage", "Quarter-finals", "Final", "Completed")
+//   winnerId      Int?     // ID do time vencedor (null se o campeonato ainda estiver acontecendo)
+  
+//   teams         CompetitionTeam[]  // Relação com os times participantes
+//   matches       Match[]            // Relação com os jogos da competição
+
+//   createdAt     DateTime @default(now())  
+// }
+
+// model CompetitionTeam {
+//   id            Int  @id @default(autoincrement())
+//   competitionId Int  
+//   teamId        Int  
+//   points        Int  @default(0) // Usado em ligas e fases de grupos
+//   wins          Int  @default(0) 
+//   draws         Int  @default(0) 
+//   losses        Int  @default(0) 
+//   goalsFor      Int  @default(0) 
+//   goalsAgainst  Int  @default(0) 
+//   goalDifference Int  @default(0) 
+
+//   competition   Competition @relation(fields: [competitionId], references: [id])
+//   team         Team         @relation(fields: [teamId], references: [id])
+// }
+
+// model Match {
+//   id             Int      @id @default(autoincrement())
+//   competitionId  Int?     // Campeonato ao qual essa partida pertence (opcional, pode ser amistoso)
+//   homeTeamId     Int      // Time mandante
+//   awayTeamId     Int      // Time visitante
+//   homeGoals      Int?     @default(0) // Gols do time da casa
+//   awayGoals      Int?     @default(0) // Gols do time visitante
+//   round          Int?     // Rodada (para ligas) ou fase do torneio
+//   stage          String?  // Nome da fase (ex: "Group Stage", "Quarter-finals", "Final")
+//   isKnockout     Boolean  @default(false) // Define se é um jogo de mata-mata
+//   winnerId       Int?     // ID do time vencedor (null se empate ou não finalizado)
+//   playedAt       DateTime? // Data e horário do jogo
+//   status         String   @default("scheduled") // "scheduled", "in_progress", "finished"
+
+//   competition    Competition? @relation(fields: [competitionId], references: [id])
+//   homeTeam       Team         @relation(fields: [homeTeamId], references: [id])
+//   awayTeam       Team         @relation(fields: [awayTeamId], references: [id])
+// }
