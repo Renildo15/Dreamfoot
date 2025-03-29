@@ -1,11 +1,16 @@
 import { prisma } from "@/lib/prisma";
-import { CreateChampionship } from "@/types/championship";
+import { CreateChampionship } from "@/types";
 import { NextResponse } from "next/server";
+
+// 1 - Mundial
+// 2 - Continental
+// 3 - Nacional
+// 4 - Regional
 
 export async function POST(request: Request) {
     try {
         const body: CreateChampionship = await request.json()
-        const { name, format, is_active, teams_count, type, logo } = body;
+        const { name, format, is_active, teams_count, type, logo, relevance } = body;
 
         if (!name) {
             return NextResponse.json({ error : "Name is required"}, { status: 404})
@@ -21,8 +26,12 @@ export async function POST(request: Request) {
             return NextResponse.json({ error : "Teams count must be at least 2 teams."}, { status: 404})
         }
 
+        if (relevance < 1 || relevance > 4) {
+            return NextResponse.json({ error : "Relevance must be beetwen 1 and 4."}, { status: 404})
+        }
+
         const newChampionship = await prisma.championship.create({
-            data: {name, format, is_active, teams_count, type, logo}
+            data: {name, format, is_active, teams_count, type, logo, relevance}
         })
         
         return NextResponse.json(newChampionship, {status: 201})
@@ -36,8 +45,11 @@ export async function POST(request: Request) {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: Request) {
    try {
-    const championships = await prisma.championship.findMany()
-
+    const championships = await prisma.championship.findMany({
+        include: {
+            divisions: true
+        }
+    })
     if (championships.length === 0) {
         return NextResponse.json({ error: "No championships found" }, { status: 404 });
     }

@@ -1,3 +1,5 @@
+import { Division } from "./division";
+
 export enum ChampionshipFormat {
     LEAGUE = "LEAGUE",
     KNOCKOUT = "KNOCKOUT",
@@ -20,6 +22,8 @@ export type Championship = {
     teams_count: number;
     logo?: string;
     is_active: boolean;
+    relevance: number;
+    divisions: Division[]
 
     // season_id?: number;  
     // season?: Season;  
@@ -27,4 +31,4 @@ export type Championship = {
     // ChampionshipTeam: ChampionshipTeam[];  
 }
 // Usar o Pick<T, K>
-export type CreateChampionship = Omit<Championship, "id">
+export type CreateChampionship = Omit<Championship, "id" | "divisions">
