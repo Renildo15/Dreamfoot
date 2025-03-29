@@ -37,4 +37,4 @@ export type Coach = {
     reputation: number;
 }
 
-export type CreateCoach = Omit<Coach, "id" | "titles" | "experience" | "reputation">;
+export type CreateCoach = Pick<Coach, "name" | "nationality" | "tactics" | "preferenceFormation">;
