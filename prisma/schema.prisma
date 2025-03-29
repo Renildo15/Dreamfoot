@@ -76,11 +76,21 @@ model Championship {
   teams_count Int    
   logo        String?
   is_active   Boolean    @default(true)
+  relevance   Int?         // de 1 a 5
 
   season_id   Int?
   season      Season?    @relation(fields: [season_id], references: [id])
 
   ChampionshipTeam ChampionshipTeam[]
+  divisions   Division[] @relation("ChampionshipDivisions")
+}
+
+model Division {
+  id          Int      @id @default(autoincrement())
+  name        String
+  level       Int      @unique // Garante que não existam duas divisões com o mesmo nível
+  
+  championships Championship[] @relation("ChampionshipDivisions")
 }
 
 // model CoachHistory {
