@@ -28,25 +28,12 @@ enum Formation {
   FOUR_ONE_TWO_ONE_TWO // 4-1-2-1-2 (losango)
 }
 
-enum SeasonStatus {
-  UPCOMING //temporada ainda não iniciada
-  ONGOING // temporada em andamento
-  FINISHED // temporada finalizada
-  CANCELLED // temporada cancelada
-  PAUSED // temporada pausada
-}
-
-enum ChampionshipFormat {
-  LEAGUE      // Pontos corridos
-  KNOCKOUT    // Mata-mata
-  GROUP_STAGE // Fase de grupos seguida de mata-mata
-  MIXED       // Combinação de liga e mata-mata
-  ROUND_ROBIN // Todos jogam contra todos, podendo ter mais de um turno
-}
-
-enum ChampionshipType {
-  NATIONAL      // Campeonato nacional
-  INTERNATIONAL // Campeonato internacional
+enum Reputation {
+  AMATEUR      // Small local tournaments with no major recognition
+  REGIONAL     // Lower-tier cups within a country or continent
+  NATIONAL     // National-level cups, like the FA Cup or Copa del Rey
+  CONTINENTAL  // International cups within a continent (e.g., Champions League, Copa Libertadores)
+  WORLDWIDE    // Highest level, like the FIFA World Cup or Club World Cup
 }
 
 model Coach {
@@ -60,62 +47,85 @@ model Coach {
   preferenceFormation Formation?
 }
 
-model Season {
-  id          Int      @id @default(autoincrement())
-  year        Int      @default(30)
-  status      SeasonStatus
 
-  Championship Championship[]
-}
-
-model Championship {
+model Country {
   id          Int      @id @default(autoincrement())
   name        String
-  format      ChampionshipFormat
-  type        ChampionshipType
-  teams_count Int    
-  logo        String?
-  is_active   Boolean    @default(true)
-  relevance   Int?         // de 1 a 5
+  continent   String
 
-  season_id   Int?
-  season      Season?    @relation(fields: [season_id], references: [id])
+  cups Cup[]
 
-  ChampionshipTeam ChampionshipTeam[]
-  divisions   Division[] @relation("ChampionshipDivisions")
+  leagues League[]
+}
+
+model Cup {
+  id             Int      @id @default(autoincrement())
+  name           String
+  teams_count    Int
+  reputation     Reputation
+  is_active      Boolean  @default(true)
+  is_group_stage Boolean
+  logo_cup       String?
+  groups_count   Int
+  image_trophy   String?
+  award          Float
+
+  country_id     Int
+
+  country        Country @relation(fields: [country_id], references: [id], onDelete: Cascade)
+
+  groups Group[]
+
+  seasons Season[]
+}
+
+model Group {
+  id             Int      @id @default(autoincrement())
+  name           String
+  teams_count    Int
+
+  cup_id         Int
+  cup            Cup  @relation(fields: [cup_id], references: [id], onDelete: Cascade)
+}
+
+model League {
+  id             Int      @id @default(autoincrement())
+  name           String
+  knockout       Boolean
+  reputation     Reputation
+  is_active      Boolean @default(true)
+  division_count Int
+
+  country_id     Int
+  country        Country @relation(fields: [country_id], references: [id], onDelete: Cascade)
+
+  divisions Division[]
+
+  seasons Season[]
 }
 
 model Division {
-  id          Int      @id @default(autoincrement())
-  name        String
-  level       Int      @unique // Garante que não existam duas divisões com o mesmo nível
-  
-  championships Championship[] @relation("ChampionshipDivisions")
+  id             Int      @id @default(autoincrement())
+  name           String
+  teams_count    Int
+  division_logo  String?
+  is_active      Boolean @default(true)
+  image_trophy   String?
+  division_order Int
+  award          Float
+
+  league_id      Int
+  league         League @relation(fields: [league_id], references: [id], onDelete: Cascade)
 }
 
-// model CoachHistory {
-//   id         Int      @id @default(autoincrement())
-//   coachId    Int
-//   teamId     Int
-//   startDate  DateTime // Quando o treinador assumiu o time
-//   endDate    DateTime? // Quando o treinador saiu do time (null se ainda for o técnico)
+model Season {
+  id             Int      @id @default(autoincrement())
+  year           Int
+  is_active      Boolean
+  winner         String?
+  cup_id         Int?
+  league_id      Int?
 
-//   coach      Coach    @relation(fields: [coachId], references: [id])
-//   team       Team     @relation(fields: [teamId], references: [id])
-// }
-
-
-model ChampionshipTeam {
-  id                Int      @id @default(autoincrement())
-  championship_id   Int
-  team_id           Int
-
-  championship      Championship   @relation(fields: [championship_id], references: [id])
-  team              Team           @relation(fields: [team_id], references: [id])
-}
-
-model Team {
-  id                Int      @id @default(autoincrement())
-  
-  ChampionshipTeam ChampionshipTeam[]
+  cup            Cup? @relation(fields: [cup_id], references: [id])
+  league         League? @relation(fields: [league_id], references: [id])
 }
