@@ -1,12 +1,17 @@
 import { Coach, CreateCoach } from "./coach";
-import { Championship, CreateChampionship} from "./championship"
-import {Division, CreateDivision }  from "./division";
+import { Cup, CreateCup, Reputation} from "./cup";
+import { Season } from "./season";
+import { Division, League, CreateDivision, CreateLeague} from "./league";
 
 export type {
     Coach,
     CreateCoach,
-    Championship,
-    CreateChampionship,
+    Cup,
+    Reputation,
+    CreateCup,
     Division,
-    CreateDivision
+    CreateDivision,
+    CreateLeague,
+    League,
+    Season
 }
