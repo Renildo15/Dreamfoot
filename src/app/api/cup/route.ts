@@ -81,23 +81,3 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// export async function GET(request: Request) {
-//    try {
-//     const championships = await prisma.championship.findMany({
-//         include: {
-//             divisions: true
-//         }
-//     })
-//     if (championships.length === 0) {
-//         return NextResponse.json({ error: "No championships found" }, { status: 404 });
-//     }
-
-//     return NextResponse.json({ championships }, { status: 200 });
-//    } catch (error) {
-//         console.error("Error fetching championships:", error);
-//         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-//    }
-
-// }
